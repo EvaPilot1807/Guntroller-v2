@@ -67,6 +67,7 @@ void sendMouseMovement(int8_t x, int8_t y, uint8_t buttons) {
 ADC_HandleTypeDef hadc1;
 
 I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_rx;
 
 /* USER CODE BEGIN PV */
 
@@ -75,6 +76,7 @@ I2C_HandleTypeDef hi2c1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
@@ -115,13 +117,15 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC1_Init();
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   MPU6050_init();
-  float Gx = 0, Gy = 0, Gz = 0;
-  float Ax = 0, Ay = 0, Az = 0;
+  extern float Gy, Gz;
+  float sens = 5;
+  float deadZone = 0.5;
 
 
 
@@ -132,23 +136,22 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
-	  MPU6050_Read_Gyro(&Gx, &Gy, &Gz);
-	  MPU6050_Read_Accel(&Ax, &Ay, &Az);
-	  float sens = 5;
-	  float deadZone = 0.5;
-	  Gz = Gz/sens;
-	  Gy = Gy/sens;
-	  if (Gz <= deadZone && Gz >= -deadZone){
-		  Gz = 0;
+	  MPU6050_Read_Values();
+
+	  float current_Gz = Gz / sens;
+	  float current_Gy = Gy / sens;
+	  if (current_Gz <= deadZone && current_Gz >= -deadZone){
+		  current_Gz = 0;
 	  }
-	  if (Gy <= deadZone && Gy >= -deadZone){
-	  		  Gy = 0;
+	  if (current_Gy <= deadZone && current_Gy >= -deadZone){
+		  current_Gy = 0;
 	  	  }
 
-	  sendMouseMovement(-Gz, Gy, 0);
+	  sendMouseMovement(-current_Gz, current_Gy, 0);
 
-	  HAL_Delay(1);
+
 
   }
   /* USER CODE END 3 */
@@ -267,7 +270,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -282,6 +285,22 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
 
 }
 

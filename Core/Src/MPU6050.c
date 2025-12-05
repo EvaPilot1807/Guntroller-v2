@@ -15,6 +15,11 @@ int16_t Gyro_X_RAW, Gyro_Y_RAW, Gyro_Z_RAW;
 
 extern I2C_HandleTypeDef hi2c1;
 
+uint8_t DMA_Buffer[14];
+
+float Ax, Ay, Az, Gx, Gy, Gz;
+
+
 void MPU6050_init(void)
 {
     uint8_t check, data;
@@ -42,30 +47,31 @@ void MPU6050_init(void)
     }
 }
 
-void MPU6050_Read_Accel(float* Ax, float* Ay, float* Az)
+void MPU6050_Read_Values(void)
 {
-    uint8_t Rec_Data[6];
-    HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG, 1, Rec_Data, 6, 1000);
 
-    Accel_X_RAW = (int16_t)(Rec_Data[0] << 8 | Rec_Data[1]);
-    Accel_Y_RAW = (int16_t)(Rec_Data[2] << 8 | Rec_Data[3]);
-    Accel_Z_RAW = (int16_t)(Rec_Data[4] << 8 | Rec_Data[5]);
+    HAL_I2C_Mem_Read_DMA(&hi2c1, MPU6050_ADDR, ACCEL_XOUT_H_REG, 1, DMA_Buffer, 14);
 
-    *Ax = Accel_X_RAW * 100.0 / 16384.0;
-    *Ay = Accel_Y_RAW * 100.0 / 16384.0;
-    *Az = Accel_Z_RAW * 100.0 / 16384.0;
 }
 
-void MPU6050_Read_Gyro(float* Gx, float* Gy, float* Gz)
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-    uint8_t Rec_Data[6];
-    HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, GYRO_XOUT_H_REG, 1, Rec_Data, 6, 1000);
+    if (hi2c->Instance == I2C1)
+    {
+    Accel_X_RAW = (int16_t)(DMA_Buffer[0] << 8 | DMA_Buffer[1]);
+    Accel_Y_RAW = (int16_t)(DMA_Buffer[2] << 8 | DMA_Buffer[3]);
+    Accel_Z_RAW = (int16_t)(DMA_Buffer[4] << 8 | DMA_Buffer[5]);
+    Gyro_X_RAW = (int16_t)(DMA_Buffer[8] << 8 | DMA_Buffer[9]);
+    Gyro_Y_RAW = (int16_t)(DMA_Buffer[10] << 8 | DMA_Buffer[11]);
+    Gyro_Z_RAW = (int16_t)(DMA_Buffer[12] << 8 | DMA_Buffer[13]);
 
-    Gyro_X_RAW = (int16_t)(Rec_Data[0] << 8 | Rec_Data[1]);
-    Gyro_Y_RAW = (int16_t)(Rec_Data[2] << 8 | Rec_Data[3]);
-    Gyro_Z_RAW = (int16_t)(Rec_Data[4] << 8 | Rec_Data[5]);
-
-    *Gx = Gyro_X_RAW / 131.0;
-    *Gy = Gyro_Y_RAW / 131.0;
-    *Gz = Gyro_Z_RAW / 131.0;
+    Ax = Accel_X_RAW * 100.0 / 16384.0;
+    Ay = Accel_Y_RAW * 100.0 / 16384.0;
+    Az = Accel_Z_RAW * 100.0 / 16384.0;
+    Gx = Gyro_X_RAW / 131.0;
+    Gy = Gyro_Y_RAW / 131.0;
+    Gz = Gyro_Z_RAW / 131.0;
+    }
 }
+
+
