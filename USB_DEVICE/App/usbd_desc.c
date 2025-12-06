@@ -65,7 +65,11 @@
 #define USBD_VID     1155
 #define USBD_LANGID_STRING     1033
 #define USBD_MANUFACTURER_STRING     "STMicroelectronics"
+<<<<<<< HEAD
 #define USBD_PID_FS     22317
+=======
+#define USBD_PID_FS     22315
+>>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
 #define USBD_PRODUCT_STRING_FS     "STM32 Human interface"
 #define USBD_CONFIGURATION_STRING_FS     "HID Config"
 #define USBD_INTERFACE_STRING_FS     "HID Interface"

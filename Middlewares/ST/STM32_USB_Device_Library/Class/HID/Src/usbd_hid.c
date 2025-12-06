@@ -221,8 +221,13 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE] __
 {
   0x05, 0x01,        /* Usage Page (Generic Desktop Ctrls)     */
   0x09, 0x02,        /* Usage (Mouse)                          */
+<<<<<<< HEAD
   0xA1, 0x01,        /* Collection (Application)               */
   0x85, 0x01,
+=======
+  0xA1, 0x01,		 /* Collection (Application)               */
+  0x85, 0x02,
+>>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
   0x09, 0x01,        /*   Usage (Pointer)                      */
   0xA1, 0x00,        /*   Collection (Physical)                */
   0x05, 0x09,        /*     Usage Page (Button)                */
@@ -236,6 +241,7 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE] __
   0x95, 0x01,        /*     Report Count (1)                   */
   0x75, 0x05,        /*     Report Size (5)                    */
   0x81, 0x01,        /*     Input (Const,Array,Abs)            */
+<<<<<<< HEAD
   /* --- 16-BIT X and Y AXIS (The High Res Fix) --- */
     0x05, 0x01,        /* Usage Page (Generic Desktop Ctrls) */
     0x09, 0x30,        /* Usage (X)                          */
@@ -258,6 +264,17 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE] __
     0x75, 0x08,        /* Report Size (8)  <- Wheel stays 8 bits */
     0x95, 0x01,        /* Report Count (1) <- Wheel only     */
     0x81, 0x06,        /* Input (Data,Var,Rel)               */
+=======
+  0x05, 0x01,        /*     Usage Page (Generic Desktop Ctrls) */
+  0x09, 0x30,        /*     Usage (X)                          */
+  0x09, 0x31,        /*     Usage (Y)                          */
+  0x09, 0x38,        /*     Usage (Wheel)                      */
+  0x15, 0x81,        /*     Logical Minimum (-127)             */
+  0x25, 0x7F,        /*     Logical Maximum (127)              */
+  0x75, 0x08,        /*     Report Size (8)                    */
+  0x95, 0x03,        /*     Report Count (3)                   */
+  0x81, 0x06,        /*     Input (Data,Var,Rel)               */
+>>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
   0xC0,              /*   End Collection                       */
   0x09, 0x3C,        /*   Usage (Motion Wakeup)                */
   0x05, 0xFF,        /*   Usage Page (Reserved 0xFF)           */
@@ -270,6 +287,7 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE] __
   0x75, 0x06,        /*   Report Size (6)                      */
   0x95, 0x01,        /*   Report Count (1)                     */
   0xB1, 0x01,        /*   Feature (Const,Array,Abs,NoWrp)      */
+<<<<<<< HEAD
   0xC0,              /* End Collection                         */
 
   0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
@@ -306,6 +324,9 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE] __
   0x81, 0x00,                    //   INPUT (Data,Ary,Abs)
   0xc0                           // END_COLLECTION
 
+=======
+  0xC0               /* End Collection                         */
+>>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
 };
 
 static uint8_t HIDInEpAdd = HID_EPIN_ADDR;
