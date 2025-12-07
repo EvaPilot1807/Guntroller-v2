@@ -37,27 +37,14 @@
 /* USER CODE BEGIN PD */
 extern USBD_HandleTypeDef hUsbDeviceFS;
 typedef struct {
-	uint8_t reportId;
 	uint8_t buttonStatus;
-    int16_t xMovement;
-    int16_t yMovement;
+    int8_t xMovement;
+    int8_t yMovement;
     int8_t scroll;
 } mouseReport;
 
-typedef struct {
-	uint8_t reportId; // Always 2
-	uint8_t modifiers;
-	uint8_t reserved;
-	uint8_t key1;
-	uint8_t key2;
-	uint8_t key3;
-	uint8_t key4;
-	uint8_t key5;
-	uint8_t key6;
-}keyboardReport;
 
-mouseReport reportData = {0x01, 0, 0, 0, 0};
-keyboardReport reportData2 = {0x02, 0, 0, 0, 0, 0, 0, 0, 0};
+mouseReport reportData = {0, 0, 0, 0};
 
 void sendReportMouse(uint8_t buttons, int8_t x, int8_t y, int8_t scroll) {
 
@@ -71,11 +58,7 @@ void sendReportMouse(uint8_t buttons, int8_t x, int8_t y, int8_t scroll) {
     USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*)&reportData, sizeof(mouseReport));
 }
 
-void sendReportKey(uint8_t key){
-	reportData2.modifiers = 0x0;
-	reportData2.key1 = key;
-	USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*)&reportData2, sizeof(keyboardReport));
-}
+
 
 
 
@@ -101,8 +84,8 @@ DMA_HandleTypeDef hdma_i2c1_rx;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-static void MX_I2C1_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -142,9 +125,9 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_ADC1_Init();
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
-  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   MPU6050_init();
   extern float Gy, Gz;
@@ -152,7 +135,7 @@ int main(void)
 
 
   int scrollStatus = 0;
-  int prevKeyStatus = 0;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -165,28 +148,33 @@ int main(void)
 	  MPU6050_Read_Values();
 	  HAL_ADC_Start(&hadc1);
 	  int leftClickStatus = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
-	  int bKeyStatus = HAL_GPIO_ReadPin(GPIOB ,GPIO_PIN_10);
+	  int rightClickStatus = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10);
 	  int precisionMode = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
 	  int reset = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6);
 	  int quickMode = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5);
-	  int scroll = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
-	  int escKeyStatus = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2);
-	  float sensitivity = HAL_ADC_GetValue(&hadc1);
-	  float sens = 3 + ((sensitivity/4096)*10);
+	  int scrollUp = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
+	  int scrollDown = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2);
 
-	  float Gz1 = Gz*10 / sens;
-	  float Gy1 = Gy*10 / sens;
+	  float sensitivity = HAL_ADC_GetValue(&hadc1);
+	  float sens = 0.5 + ((sensitivity/4096)*5);
+
+	  float Gz1 = Gz / sens;
+	  float Gy1 = Gy / sens;
 
 
 	  if(leftClickStatus == 0){
 		 buttonStatus = 0x01;
-	  } else {
+	  } else if(rightClickStatus == 0){
+			 buttonStatus = 0x02;
+		  } else {
 		  buttonStatus = 0x00;
 	  }
 
-	  if(scroll == 0){
-		  scrollStatus = 2;
-	  } else {
+	  if(scrollUp == 0){
+		  scrollStatus = 1;
+	  } else if(scrollDown == 0){
+		  scrollStatus = -1;
+	  }		else{
 		  scrollStatus = 0;
 	  }
 
@@ -207,26 +195,8 @@ int main(void)
 		  Gz1 = Gz1;
 	  }
 
-
-
-
-	  int currentKeyToPress = 0; // Default to "Release All"
-	  if (bKeyStatus == 0){
-		  currentKeyToPress = 0x05;
-	  }
-	  else if (escKeyStatus == 0) {
-		  currentKeyToPress = 0x29;
-	  }
-
-	  // 2. Send Key Report ONLY if the state changed (Press or Release)
-	  if (currentKeyToPress != prevKeyStatus) {
-	      sendReportKey(currentKeyToPress); // This handles both Press AND Release (0)
-	      prevKeyStatus = currentKeyToPress;
-	  }
-
-
-
 	  sendReportMouse(buttonStatus, -Gz1, Gy1, scrollStatus);
+
 
 
 
