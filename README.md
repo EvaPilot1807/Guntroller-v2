@@ -15,7 +15,7 @@ Thats why I optimizied and added a few things (and removed some).
 * **Changed endpoint variables of the CubeMX generated USB HID stack:** For faster report time.
 * **Optimized I2C bus frequency:** Set I2C to Fast mode at 400KHz. This, combined with DMA, reduces the physical time required to extract the 14 bytes of raw sensor data from the MPU6050
 
-### Achieved true stable 1000Hz polling rate due to above changes (>12x faster than V1)
+### Achieved true stable 1000Hz polling rate due to above changes (>12x faster than V1, which had 60-70Hz stable)
 
 ## Other changes
 
