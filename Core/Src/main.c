@@ -37,7 +37,6 @@
 /* USER CODE BEGIN PD */
 extern USBD_HandleTypeDef hUsbDeviceFS;
 typedef struct {
-<<<<<<< HEAD
 	uint8_t reportId;
 	uint8_t buttonStatus;
     int16_t xMovement;
@@ -81,27 +80,6 @@ void sendReportKey(uint8_t key){
 
 
 
-=======
-    uint8_t reportID;      // The ID specified in the Report Descriptor for the mouse (e.g., 0x02)
-    uint8_t buttonStatus;  // Bitfield for Left, Right, Middle buttons
-    int8_t xMovement;      // Signed 8-bit relative movement (change since last report)
-    int8_t yMovement;// Signed 8-bit relative movement (change since last report)
-    int8_t scroll;
-} mouseReport;
-
-void sendMouseMovement(int8_t x, int8_t y, uint8_t buttons) {
-    mouseReport report_data;
-
-    report_data.reportID = 0x02; // Use your actual Mouse Report ID
-    report_data.buttonStatus = buttons;
-    report_data.xMovement = x;
-    report_data.yMovement = y;
-    report_data.scroll = 0;
-
-    // This function requires the extern-declared hUsbDeviceFS handle
-    USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*)&report_data, sizeof(mouseReport));
-}
->>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -123,13 +101,8 @@ DMA_HandleTypeDef hdma_i2c1_rx;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-<<<<<<< HEAD
 static void MX_I2C1_Init(void);
 static void MX_ADC1_Init(void);
-=======
-static void MX_ADC1_Init(void);
-static void MX_I2C1_Init(void);
->>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -169,7 +142,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-<<<<<<< HEAD
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   MX_ADC1_Init();
@@ -181,19 +153,6 @@ int main(void)
 
   int scrollStatus = 0;
   int prevKeyStatus = 0;
-=======
-  MX_ADC1_Init();
-  MX_I2C1_Init();
-  MX_USB_DEVICE_Init();
-  /* USER CODE BEGIN 2 */
-  MPU6050_init();
-  extern float Gy, Gz;
-  float sens = 5;
-  float deadZone = 0.5;
-
-
-
->>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -204,7 +163,6 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  MPU6050_Read_Values();
-<<<<<<< HEAD
 	  HAL_ADC_Start(&hadc1);
 	  int leftClickStatus = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
 	  int bKeyStatus = HAL_GPIO_ReadPin(GPIOB ,GPIO_PIN_10);
@@ -269,19 +227,6 @@ int main(void)
 
 
 	  sendReportMouse(buttonStatus, -Gz1, Gy1, scrollStatus);
-=======
-
-	  float current_Gz = Gz / sens;
-	  float current_Gy = Gy / sens;
-	  if (current_Gz <= deadZone && current_Gz >= -deadZone){
-		  current_Gz = 0;
-	  }
-	  if (current_Gy <= deadZone && current_Gy >= -deadZone){
-		  current_Gy = 0;
-	  	  }
-
-	  sendMouseMovement(-current_Gz, current_Gy, 0);
->>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
 
 
 
@@ -373,11 +318,7 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-<<<<<<< HEAD
   sConfig.Channel = ADC_CHANNEL_1;
-=======
-  sConfig.Channel = ADC_CHANNEL_7;
->>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -447,10 +388,7 @@ static void MX_DMA_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-<<<<<<< HEAD
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-=======
->>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
@@ -460,7 +398,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-<<<<<<< HEAD
   /*Configure GPIO pins : PA5 PA6 PA7 PA10 */
   GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -473,8 +410,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-=======
->>>>>>> afb0988ffc1b74f9c4f10309fe57bcda370fa95e
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
   /* USER CODE END MX_GPIO_Init_2 */
