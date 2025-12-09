@@ -6,6 +6,7 @@ Version 2 of my older Guntroller, now powered by STM32F411CEU6 instead of Arduin
 
 V2 is all about **speed** and **performance**. \
 Thats why I optimizied and added a few things (and removed some).
+Dynamic features (precision mode, caliberation reset) are still alive.
 
 ## New Features
 
