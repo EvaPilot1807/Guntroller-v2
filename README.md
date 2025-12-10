@@ -23,6 +23,14 @@ Dynamic features (precision mode, caliberation reset) are still alive.
 * Added on board potentiometer for sensitivity control.
 * Removed "B" and "esc" key (which was a feature in v1) to avoid clashing of USB HID reports and decreasing polling rate.
 
+## Performance benchmarks 
+| State  | Polling rate |
+| ------------- |:-------------:|
+| Arduino (V1)     | 80hz     |
+| STM32 without DMA on MPU6050 and no USB HID optimizations | 100Hz    |
+| STM32 with USB HID optimizations (Still no DMA     | 300-350Hz     |
+| STM32 With DMA and HID optimizations | 950-1000Hz|
+
 
 ## Important advice if you plan to build and use it
 
